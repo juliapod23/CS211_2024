@@ -1,3 +1,9 @@
+/* -------------------------------------------
+Program 2: Food Webs and Dynamic Memory
+Course: CS 211, Spring 2024, UIC
+System: Advanced zyLab
+Author: Julia Podstawka
+------------------------------------------- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,21 +14,29 @@ typedef struct Org_struct {
     int numPrey;
 } Org;
 
+// Function Prototypes:
+void buildWeb(Org* web, int numOrg, int predInd, int preyInd);
+void extinction(Org** web, int* numOrgs, int index);
+void printWeb(Org* web, int numOrgs);
+void printApex(Org* web, int numOrgs);
+void printProducers(Org* web, int numOrgs);
+void printFlexible(Org* web, int numOrgs);
+void printTasty(Org* web, int numOrgs);
+void printHeights(Org* web, int numOrgs);
+bool checkProducer(Org* web, int n);
+bool checkHerbivore(Org* web, int n);
+bool checkCarnivore(Org* web, int n);
+bool checkOmnivore(Org* web, int n);
+void printVoreType(Org* web, int numOrgs);
+
+/**
+ * Creates a web based on the user's inputted predator/prey relationships
+ * @param web collection of Org structs
+ * @param numOrg number of organisms in the web
+ * @param predInd predator index
+ * @param preyInd prey index
+ */
 void buildWeb(Org* web, int numOrg, int predInd, int preyInd) {
-    //TODO (Task 1): build the web by adding the predator-prey relation to the food web.
-    //      Inputs:
-    //          web - a dynamically allocated array of Orgs
-    //          numOrgs - number of organisms = size of web[]
-    //          predInd - predator index in web[]; an entry to its prey[] subitem will be added
-    //          preyInd - prey index in web[]; will be added to predator's prey[] subitem
-    //      Outputs:
-    //          web - array is updated and implicitly returned (previously allocated on heap)
-    //
-    //      For the predator-prey relation...
-    //      (1) if the predator's prey[] array is empty, allocate memory for one index
-    //          otherwise, reallocate predator's prey[] array to allow one more index
-    //      (2) append the prey index as the last element of the predator's prey[] array
-    //      (3) update the numPrey subitem for the predator appropriately
 
     // allocate space for one more entry in prey arr
     int* preyArr = malloc(sizeof(int)*(web[predInd].numPrey + 1));
@@ -31,7 +45,6 @@ void buildWeb(Org* web, int numOrg, int predInd, int preyInd) {
         preyArr[i] = web[predInd].prey[i];
     }
 
-    //Add new entry
     preyArr[web[predInd].numPrey] = preyInd;
 
     // free old array
@@ -39,49 +52,348 @@ void buildWeb(Org* web, int numOrg, int predInd, int preyInd) {
 
     // reassign pointer
     web[predInd].prey = preyArr;
-
-    //Update the number of prey
     web[predInd].numPrey++;
 }
 
-
+/**
+ * Simulates the occurrence of an organism going extinct,
+ * updates web accordingly
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ * @param index index of organism to go extinct
+ */
 void extinction(Org** web, int* numOrgs, int index) {
-    //TODO (Task 3): remove the organism associated with [index] from web.
-    //      Inputs:
-    //          web - a dynamically allocated array of Orgs
-    //          numOrgs - number of organisms = size of web[]
-    //          index - organism index in web[] to remove
-    //      Outputs:
-    //          web - pointer passed-by-pointer; memory address of web array changes due to reallocation
-    //          numOrgs - passed-by-pointer; must be decremented since web[] loses an organism
-    //
-    //      Remember to do the following:
-    //      1. remove organism at index from web[] - DO NOT use realloc(), instead...
-    //          (a) free any malloc'd memory associated with organism at index; i.e. its prey[] subitem
-    //          (b) malloc new space for the array with the new number of Orgs
-    //          (c) copy all but one of the old array elements to the new array,
-    //              some require shifting forward to overwrite the organism at index
-    //          (d) free the old array
-    //          (e) update the array pointer to the new array
-    //          (f) update numOrgs
-    //      2. remove index from all organisms' prey[] array subitems - DO NOT use realloc(), instead...
-    //          (a) search for index in all organisms' prey[] arrays; when index is found:
-    //                [i] malloc new space for the array with the new number of ints
-    //               [ii] copy all but one of the old array elements to the new array,
-    //                    keeping the same order some require shifting forward
-    //              [iii] free the old array
-    //               [iv] update the array pointer to the new array
-    //                [v] update the numPrey subitem accordingly
-    //          (b) update all organisms' prey[] elements that are greater than index,
-    //              which have been shifted forward in the web array
-    //
-    //          Edge case: check the size array being malloc'ed;
-    //                     for a web with only one organism and
-    //                     that orgranism goes extinct,
-    //                     instead of malloc'ing an empty array,
-    //                     explicitly set the pointer to NULL;
-    //                     see the web[] allocation in main() as an example
+    // web gets set to null if its empty
+    if(*numOrgs <= 1){
+        (*web)[0].prey = NULL;
+        free(*web);
+        *web = NULL;
+        (*numOrgs)--;
+        return;
+    }
 
+    // updates food web and reallocates memory for an updated array
+    free((*web)[index].prey);
+
+    Org* updatedWeb = malloc((*numOrgs - 1) * sizeof(Org));
+    for(int i = 0; i < index; i++){
+        updatedWeb[i] = (*web)[i];
+    }
+
+    for(int i = index; i < *numOrgs - 1; i++){
+        updatedWeb[i] = (*web)[i + 1];
+    }
+
+    free(*web);
+    // reset pointer
+    *web = updatedWeb;
+    // change numOrgs
+    (*numOrgs)--;
+
+    // updates each organisms prey array
+    for(int i = 0; i < *numOrgs; i++){
+        for(int j = 0; j < (*web)[i].numPrey; j++){
+            // if the prey to be considered extinct is present in
+            // the prey array,
+            if((*web)[i].prey[j] == index){
+                int* tempPrey = malloc(((*web)[i].numPrey - 1) * sizeof(int));
+
+                for(int k = 0; k < j; k++){
+                    tempPrey[k] = (*web)[i].prey[k];
+                }
+
+                for(int m = j; m < (*web)[i].numPrey - 1; m++){
+                    tempPrey[m] = (*web)[i].prey[m+1];
+                }
+
+                (*web)[i].numPrey--;
+
+                free((*web)[i].prey);
+                (*web)[i].prey = tempPrey;
+            }
+        }
+    }
+
+    // changes each organisms prey array indexes
+    for(int i = 0; i < *numOrgs; i++){
+        for(int j = 0; j < (*web)[i].numPrey; j++){
+            if((*web)[i].prey[j] > index){
+                ((*web)[i].prey[j])--;
+            }
+        }
+    }
+
+    // changes empty prey arrays to null
+    for(int i = 0; i < *numOrgs; i++){
+        if((*web)[i].numPrey == 0){
+            (*web)[i].prey = NULL;
+        }
+    }
+}
+
+/**
+ * Prints out the predator/prey relationships in the web
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ */
+void printWeb(Org* web, int numOrgs) {
+    // print ith organisms name
+    for (int i = 0; i < numOrgs; i++) {
+        printf("  %s", web[i].name);
+
+        // print ith organisms list of prey
+        if (web[i].numPrey > 0) {
+            printf(" eats %s", web[web[i].prey[0]].name);
+        }
+        if (web[i].numPrey > 1) {
+            for (int j = 1; j < web[i].numPrey; j++) {
+                printf(", %s", web[web[i].prey[j]].name);
+            }
+        }
+        printf("\n");
+    }
+}
+
+/**
+ * Prints the apex predator
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ */
+void printApex(Org* web, int numOrgs){
+    // checks each organism in web if it appears in
+    // other organisms prey arrays
+    for(int i = 0; i < numOrgs; i++){
+        bool apex = true;
+        for(int j = 0; j < numOrgs; j++){
+            for(int prey = 0; prey < web[j].numPrey; prey++){
+                if(web[j].prey[prey] == i){
+                    apex = false;
+                }
+            }
+        }
+        // prints apex predators
+        if(apex){
+            printf("  %s\n", web[i].name);
+        }
+    }
+}
+/**
+ * Prints the producer
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ */
+void printProducers(Org* web, int numOrgs){
+    // checks if each organism has 0 prey
+    for(int i = 0; i < numOrgs; i++){
+        if(web[i].numPrey == 0){
+            printf("  %s\n", web[i].name);
+        }
+    }
+}
+
+/**
+ * Prints the organism that eats the most other organisms
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ */
+void printFlexible(Org* web, int numOrgs){
+    // checks which organism has the most prey
+    int mostPrey = web[0].numPrey;
+
+    for(int i = 1; i < numOrgs; i++){
+        if(web[i].numPrey > mostPrey){
+            mostPrey = web[i].numPrey;
+        }
+    }
+
+    // prints all organisms that have the same number of prey as
+    // the highest number of prey
+    for(int i = 0; i < numOrgs; i++){
+        if(web[i].numPrey == mostPrey){
+            printf("  %s\n", web[i].name);
+        }
+    }
+}
+
+/**
+ * Prints the organism that gets eaten by the most organisms
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ */
+void printTasty(Org* web, int numOrgs){
+    int appearances = 0;
+    int tastiest = 0;
+    for(int i = 0; i < numOrgs; i++){
+        for(int j = 0; j < numOrgs; j++){
+            for(int prey = 0; prey < web[j].numPrey; prey++){
+                if(web[j].prey[prey] == i){
+                    appearances++;
+                }
+            }
+        }
+        if(appearances > tastiest){
+            tastiest = appearances;
+        }
+        appearances = 0;
+    }
+
+    for(int i = 0; i < numOrgs; i++) {
+        for(int j = 0; j < numOrgs; j++) {
+            for (int prey = 0; prey < web[j].numPrey; prey++) {
+                if (web[j].prey[prey] == i) {
+                    appearances++;
+                }
+            }
+        }
+        if(appearances == tastiest){
+            printf("  %s\n", web[i].name);
+        }
+        appearances = 0;
+    }
+}
+
+/**
+ * Prints the height of each organism based on its position in the web
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ */
+void printHeights(Org* web, int numOrgs){
+    int heights[numOrgs];
+
+    for(int i = 0; i < numOrgs; i++){
+        heights[i] = 0;
+    }
+
+    for(int i = 0; i < numOrgs; i++){
+        for(int j = 0; j < numOrgs; j++){
+            if(web[j].numPrey == 0){
+                heights[j] = 0;
+            } else{
+                int tallest = 0;
+                for(int x = 0; x < web[j].numPrey; x++){
+                    if(heights[web[j].prey[x]] > tallest){
+                        tallest = heights[web[j].prey[x]];
+                    }
+                }
+                heights[j] = tallest + 1;
+            }
+        }
+    }
+    for(int p = 0; p < numOrgs; p++){
+        printf("  %s: %d\n", web[p].name, heights[p]);
+    }
+}
+
+/**
+ * Checks if an organism is a producer
+ * @param web collection of Org structs
+ * @param n index in web
+ * @return boolean value
+ */
+bool checkProducer(Org* web, int n){
+    if(web[n].numPrey == 0){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+/**
+ * Checks if an organism is an herbivore
+ * @param web collection of Org structs
+ * @param n index in web
+ * @return boolean value
+ */
+bool checkHerbivore(Org* web, int n){
+    bool herbivore = true;
+    if(checkProducer(web,n)){
+        return false;
+    }
+
+    for(int i = 0; i < web[n].numPrey; i++){
+        int x = web[n].prey[i];
+        if(!checkProducer(web, x)){
+            herbivore = false;
+            break;
+        }
+    }
+    return herbivore;
+}
+
+/**
+ * Checks if an organism is a carnivore
+ * @param web collection of Org structs
+ * @param n index in web
+ * @return boolean value
+ */
+bool checkCarnivore(Org* web, int n){
+    bool carnivore = true;
+
+    if(checkProducer(web,n)){
+        return false;
+    }
+
+    for(int i = 0; i < web[n].numPrey; i++){
+        int x = web[n].prey[i];
+        if(checkProducer(web,x)){
+            carnivore = false;
+            break;
+        }
+    }
+    return carnivore;
+}
+
+/**
+ * Checks if an organism is an omnivore
+ * @param web collection of Org structs
+ * @param n index in web
+ * @return boolean value
+ */
+bool checkOmnivore(Org* web, int n){
+
+    if(checkProducer(web,n)){
+        return false;
+    }
+    if(!checkHerbivore(web,n) && !checkCarnivore(web,n)){
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Prints what kind of consumer each organism is
+ * @param web collection of Org structs
+ * @param numOrgs number of organisms in the web
+ */
+void printVoreType(Org* web, int numOrgs){
+
+    printf("  Producers:\n");
+    for(int i = 0; i < numOrgs; i++){
+        if(checkProducer(web,i)){
+            printf("  %s\n", web[i].name);
+        }
+    }
+
+    printf("  Herbivores:\n");
+    for(int i = 0; i < numOrgs; i++){
+        if(checkHerbivore(web,i)){
+            printf("  %s\n", web[i].name);
+        }
+    }
+
+    printf("  Omnivores:\n");
+    for(int i = 0; i < numOrgs; i++){
+        if(checkOmnivore(web,i)){
+            printf("  %s\n", web[i].name);
+        }
+    }
+
+    printf("  Carnivores:\n");
+    for(int i = 0; i < numOrgs; i++){
+        if(checkCarnivore(web,i)){
+            printf("  %s\n", web[i].name);
+        }
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -90,7 +402,8 @@ int main(int argc, char* argv[]) {
     bool extinctMode = true;
 
     if(argc == 1){
-        printf("Program Settings:\n\tquiet mode = OFF\n\textinction mode = ON");
+        quietMode = false;
+        extinctMode = true;
     }
     if(argc == 2 || argc == 3){
         for(int i = 1; i < argc; i++){
@@ -116,7 +429,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    printf("Program Settings:\n\tquiet mode = ");
+    printf("\nProgram Settings:\n\tquiet mode = ");
     if(quietMode){
         printf("ON\n");
     } else{
@@ -163,33 +476,31 @@ int main(int argc, char* argv[]) {
     if (!quietMode) printf("--------------------------------\n\n");
 
     printf("Food Web Predators & Prey:\n");
-    //TODO (Task 2): print the Food Web Organisms with what they eat (i.e. prey)
+    printWeb(web, numOrgs);
     printf("\n");
 
     printf("Apex Predators:\n");
-    //TODO (Task 2): identify and print the organisms not eaten by any others
+    printApex(web, numOrgs);
     printf("\n");
 
     printf("Producers:\n");
-    //TODO (Task 2): identify and print the organisms that eat no other organisms
+    printProducers(web, numOrgs);
     printf("\n");
 
     printf("Most Flexible Eaters:\n");
-    //TODO (Task 2): identity and print the organism(s) with the most prey
+    printFlexible(web, numOrgs);
     printf("\n");
 
     printf("Tastiest Food:\n");
-    //TODO (Task 2): identity and print organism(s) eaten by the most other organisms
+    printTasty(web, numOrgs);
     printf("\n");
 
     printf("Food Web Heights:\n");
-    //TODO (Task 2): calculate and print the length of the longest chain from a
-    //                producer to each organism
+    printHeights(web, numOrgs);
     printf("\n");
 
     printf("Vore Types:\n");
-    //TODO (Task 2): classify all organisms and print each group
-    //               (producers, herbivores, omnivores, & carnivores)
+    printVoreType(web, numOrgs);
     printf("\n");
 
     if (extinctMode) {
@@ -202,38 +513,39 @@ int main(int argc, char* argv[]) {
         printf("--------------------------------\n\n");
 
         printf("UPDATED Food Web Predators & Prey:\n");
-        //TODO (Task 3): print the UPDATED Food Web Organisms with what they eat (i.e. prey), AFTER THE EXTINCTION
+        printWeb(web, numOrgs);
         printf("\n");
 
         printf("UPDATED Apex Predators:\n");
-        //TODO (Task 3): AFTER THE EXTINCTION, identify and print the organisms not eaten by any other
+        printApex(web, numOrgs);
         printf("\n");
 
         printf("UPDATED Producers:\n");
-        //TODO (Task 3): AFTER THE EXTINCTION, identify and print the organisms that eat no other organisms
+        printProducers(web, numOrgs);
         printf("\n");
 
         printf("UPDATED Most Flexible Eaters:\n");
-        //TODO (Task 3): AFTER THE EXTINCTION, identity and print the organism(s) with the most prey
+        printFlexible(web, numOrgs);
         printf("\n");
 
         printf("UPDATED Tastiest Food:\n");
-        //TODO (Task 3): AFTER THE EXTINCTION, identity and print organism(s) eaten by the most other organisms
+        printTasty(web,numOrgs);
         printf("\n");
 
         printf("UPDATED Food Web Heights:\n");
-        //TODO (Task 3): AFTER THE EXTINCTION, calculate and print the length of the longest chain from a
-        //               producer to each organism
+        printHeights(web, numOrgs);
         printf("\n");
 
         printf("UPDATED Vore Types:\n");
-        //TODO (Task 3): AFTER THE EXTINCTION, classify all organisms and print each group
-        //               (producers, herbivores, omnivores, & carnivores)
+        printVoreType(web, numOrgs);
         printf("\n");
         printf("--------------------------------\n");
     }
 
-    //TODO (Task 4): make sure to free all malloc'd memory to prevent potential leaks
+    for(int i = 0; i < numOrgs; i++){
+        free(web[i].prey);
+    }
+    free(web);
 
     return 0;
 }
