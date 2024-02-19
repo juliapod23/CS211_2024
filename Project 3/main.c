@@ -3,38 +3,35 @@
 #include <string.h>
 #include <stdbool.h>
 
-
-//-------------------------------------------------------------------
-// TODO - Task I: write the strNumMods() function, which returns the
-//      count of character differences between two strings, including
-//      extra characters in longer string if different lengths
-// Exs: str1 = magic, str2 = magic, returns 0
-//      str1 = wands, str2 = wants, returns 1
-//      str1 = magic, str2 = wands, returns 4
-//      str1 = magic, str2 = mag, returns 2
-//      str1 = magic, str2 = magicwand, returns 4
-//      str1 = magic, str2 = darkmagic, returns 8
-//-------------------------------------------------------------------
 int strNumMods(char* str1, char* str2) {
-    
-    return -1; //modify this
+    int numChanges = abs(strlen(str1) - strlen(str2));
+    int min;
+
+    if(strlen(str1) > strlen(str2)){
+        min = strlen(str2);
+    } else{
+        min = strlen(str1);
+    }
+
+    for(int i = 0; i < min; i++){
+        if(str1[i] != str2[i]){
+            numChanges++;
+        }
+    }
+
+    return numChanges;
 }
 
-
-//-------------------------------------------------------------------
-// TODO - Task II: write the strDiffInd() function, which returns the
-//      index of the character where the two strings first differ;
-//      returns strlen(str1) = strlen(str2) if no differences
-// Exs: str1 = magic, str2 = magic, returns 5
-//      str1 = wands, str2 = wants, returns 3
-//      str1 = magic, str2 = wands, returns 0
-//      str1 = magic, str2 = mag, returns 3
-//      str1 = magic, str2 = magicwand, returns 5
-//      str1 = magic, str2 = darkmagic, returns 0
-//-------------------------------------------------------------------
 int strDiffInd(char* str1, char* str2) {
-    
-    return -1; //modify this
+    int diff = strlen(str1);
+    for(int i = 0; i < strlen(str1); i++){
+        if(str1[i] != str2[i]){
+            diff = i;
+            break;
+        }
+    }
+
+    return diff;
 }
 
 
