@@ -1,0 +1,15 @@
+build:
+	rm -f app.exe
+	gcc main.c -o app.exe
+
+run:
+	./app.exe
+
+valgrind:
+	valgrind -s --tool=memcheck --leak-check=yes --track-origins=yes ./app.exe
+
+run_file:
+	./app.exe < input.txt
+
+run_file_valgrind:
+	valgrind -s --tool=memcheck --leak-check=yes --track-origins=yes ./app.exe < input.txt

@@ -1,0 +1,100 @@
+➜ make build_reg
+rm -f ExploreTheRegularLabyrinth.exe
+g++ -g -std=c++11 -Wall ExploreTheRegularLabyrinth.cpp -o ExploreTheRegularLabyrinth.exe
+➜ make run_reg
+./ExploreTheRegularLabyrinth.exe
+You have not escaped!
+➜ gdb ExploreTheRegularLabyrinth.exe
+GNU gdb (Ubuntu 9.2-0ubuntu1~20.04.1) 9.2
+Copyright (C) 2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ExploreTheRegularLabyrinth.exe...
+(gdb) 
+(gdb) b ExploreTheRegularLabyrinth.cpp:15
+Breakpoint 1 at 0x2b83: file ExploreTheRegularLabyrinth.cpp, line 17.
+(gdb) r
+Starting program: /usercode/ExploreTheRegularLabyrinth.exe 
+warning: Error disabling address space randomization: Operation not permitted
+
+Breakpoint 1, main () at ExploreTheRegularLabyrinth.cpp:17
+17          if (isPathToFreedom(start, kPathOutOfRegularMaze)) {
+(gdb) i locals
+m = {_vptr.Maze = 0x56151390bbf8 <vtable for Maze+16>, grid = {
+    _vptr.Grid = 0x56151390bc18 <vtable for Grid<MazeCell*>+16>, NumRows = 4, 
+    Rows = 0x561514f67f50}, numRows = 4, numCols = 4, kNumTwistyRooms = 12}
+start = 0x561514f683b0
+(gdb) p *start
+$1 = {whatsHere = "", north = 0x0, south = 0x561514f684f0, east = 0x0, 
+  west = 0x0}
+(gdb) p *(start->south)
+$2 = {whatsHere = "", north = 0x561514f683b0, south = 0x0, 
+  east = 0x561514f68540, west = 0x0}
+(gdb) p *(start->south->east)
+$3 = {whatsHere = "", north = 0x561514f68400, south = 0x561514f68680, 
+  east = 0x561514f68590, west = 0x561514f684f0}
+(gdb) p *(start->south->east->south)
+$4 = {whatsHere = "", north = 0x561514f68540, south = 0x0, 
+  east = 0x561514f686d0, west = 0x0}
+(gdb) p *(start->south->east->east)
+$5 = {whatsHere = "", north = 0x0, south = 0x0, east = 0x561514f685e0, 
+  west = 0x561514f68540}
+(gdb) p *(start->south->east->north)
+$6 = {whatsHere = "Spellbook", north = 0x0, south = 0x561514f68540, 
+  east = 0x561514f68450, west = 0x0}
+(gdb) p *(start->south->east->north->east)
+$7 = {whatsHere = "", north = 0x0, south = 0x0, east = 0x561514f684a0, 
+  west = 0x561514f68400}
+(gdb) p *(start->south->east->south->east)
+$8 = {whatsHere = "", north = 0x0, south = 0x561514f68810, east = 0x0, 
+  west = 0x561514f68680}
+(gdb) p *(start->south->east->south->east->south)
+$9 = {whatsHere = "", north = 0x561514f686d0, south = 0x0, 
+  east = 0x561514f68860, west = 0x561514f687c0}
+(gdb) p *(start->south->east->south->east->south->west)
+$10 = {whatsHere = "", north = 0x0, south = 0x0, east = 0x561514f68810, 
+  west = 0x561514f68770}
+(gdb) p *(start->south->east->south->east->south->west->west)
+$11 = {whatsHere = "", north = 0x561514f68630, south = 0x0, 
+  east = 0x561514f687c0, west = 0x0}
+(gdb) p *(start->south->east->south->east->south->west->west->north)
+$12 = {whatsHere = "Wand", north = 0x0, south = 0x561514f68770, east = 0x0, 
+  west = 0x0}
+(gdb) p *(start->south->east->south->east->south->east)
+$13 = {whatsHere = "", north = 0x0, south = 0x0, east = 0x0, 
+  west = 0x561514f68810}
+(gdb) p *(start->south->east->east->east)
+$14 = {whatsHere = "", north = 0x0, south = 0x561514f68720, east = 0x0, 
+  west = 0x561514f68590}
+(gdb) p *(start->south->east->east->east->south)
+$15 = {whatsHere = "", north = 0x561514f685e0, south = 0x0, east = 0x0, 
+  west = 0x0}
+(gdb) p *(start->south->east->north->east->east)
+$16 = {whatsHere = "Potion", north = 0x0, south = 0x0, east = 0x0, 
+  west = 0x561514f68450}
+(gdb) Quit
+(gdb) 
+(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [process 408] will be killed.
+
+Quit anyway? (y or n) y
+
+make build_reg
+rm -f ExploreTheRegularLabyrinth.exe
+g++ -g -std=c++11 -Wall ExploreTheRegularLabyrinth.cpp -o ExploreTheRegularLabyrinth.exe
+➜ make run_reg
+./ExploreTheRegularLabyrinth.exe
+You escaped!
