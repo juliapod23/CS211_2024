@@ -1,6 +1,11 @@
 /// @file star.cpp
 
-// TODO Header
+/*-------------------------------------------
+Program 6: Insterstellar Travel App
+Course: CS 211, Spring 2024, UIC
+System: Advanced zyLab
+Author: Julia Podstawka
+------------------------------------------- */
 
 /// Original project documents by Adam T Koehler, PhD
 /// UIC CS211 Spring 2024

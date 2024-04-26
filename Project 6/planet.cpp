@@ -1,6 +1,11 @@
 /// @file planet.cpp
 
-// TODO Header
+/*-------------------------------------------
+Program 6: Insterstellar Travel App
+Course: CS 211, Spring 2024, UIC
+System: Advanced zyLab
+Author: Julia Podstawka
+------------------------------------------- */
 
 /// Original project documents by Adam T Koehler, PhD
 /// UIC CS211 Spring 2024
@@ -34,3 +39,55 @@ using namespace std;
 // Defining all functions from the header that are not already
 // fully defined within the header and class declaration.
 
+Planet::Planet(const string& name, double orbitalP, double radius) : Celestial(name),
+orbitalPeriod(orbitalP), radius(radius) {}
+
+Planet::~Planet(){}
+
+double Planet::getOrbitalPeriod() const {
+    return orbitalPeriod;
+}
+
+double Planet::getRadius() const {
+    return radius;
+}
+
+int Planet::numSats() const {
+    return sats.size();
+}
+
+void Planet::setOrbitalPeriod(double orbitalP) {
+    this->orbitalPeriod = orbitalP;
+}
+
+void Planet::setRadius(double rad) {
+    this->radius = rad;
+}
+
+void Planet::addSat(shared_ptr<Celestial> &sat){
+    sats.push_back(sat);
+}
+
+bool Planet::satExists(const string &name) const {
+    for(const auto& curSat : sats){
+        if(curSat->getName() == name){
+            return true;
+        }
+    }
+    return false;
+}
+
+void Planet::printSats() const {
+    for(const auto& curSat : sats){
+        cout << curSat->toString() << endl;
+    }
+}
+
+string Planet::toString() const {
+    string str = "Planet " + getName() + " with orbital period " + to_string(orbitalPeriod) + " and relative radius of " + to_string(radius);
+
+    for(const auto& curSat : sats){
+        str += "\n    " + curSat->toString();
+    }
+    return str;
+}

@@ -1,6 +1,11 @@
 /// @file star.cpp
 
-// TODO Header
+/*-------------------------------------------
+Program 6: Insterstellar Travel App
+Course: CS 211, Spring 2024, UIC
+System: Advanced zyLab
+Author: Julia Podstawka
+------------------------------------------- */
 
 /// Original project documents by Adam T Koehler, PhD
 /// UIC CS211 Spring 2024
@@ -32,5 +37,38 @@ using namespace std;
 // Defining all functions from the header that are not already
 // fully defined within the header and class declaration.
 
+Star::Star(const string& name, const string& spectralType, double temperature, double mass) : Celestial(name)
+, mass(mass), temperature(temperature), spectralType(spectralType) {}
+
+Star::~Star(){}
+
+double Star::getMass() const{
+    return mass;
+}
+
+double Star::getTemperature() const {
+    return temperature;
+}
+
+string Star::getSpectralType() const {
+    return spectralType;
+}
+
+void Star::setMass(double m){
+    this->mass = m;
+}
+
+void Star::setTemperature(double t) {
+    this->temperature = t;
+}
+
+void Star::setSpectralType(const string &s) {
+    this->spectralType = s;
+}
+
+string Star::toString() const {
+    string str = "Star " + name + " of type " + spectralType + " with temperature " + to_string(temperature) + " and mass " + to_string(mass);
+    return str;
+}
 
 

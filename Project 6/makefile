@@ -29,3 +29,10 @@ runvalgrind:
 solution:
 	chmod u+x ./solution.out
 	clear;./solution.out -splash
+
+testsuite:
+	rm -f testsuite.out
+	g++ -I includes -Wall -fconcepts -std=c++2a project_utils.cpp celestial.cpp solarsystem.cpp star.cpp planet.cpp satellite.cpp flightpath.cpp testsuite.o -o testsuite.out -lgtest -lgtest_main -lpthread
+
+runtestsuite:
+	./testsuite.out

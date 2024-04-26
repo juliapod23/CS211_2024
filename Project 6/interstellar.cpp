@@ -1,7 +1,13 @@
 /// @file interstellar.cpp
-/// @date 
+/// @date
 
-// TODO Header
+/*-------------------------------------------
+Program 6: Insterstellar Travel App
+Course: CS 211, Spring 2024, UIC
+System: Advanced zyLab
+Author: Julia Podstawka
+------------------------------------------- */
+
 
 /// Original project documents by Adam T Koehler, PhD
 /// UIC CS211 Spring 2024
@@ -55,7 +61,14 @@ int main(int argc, char* argv[])
     // Flight path through the Solar Systems
     FlightPath path;
 
-    // TODO: Determine whether -splash or -hidemenu command line argument exists.
+    // DONE: Determine whether -splash or -hidemenu command line argument exists.
+    for(int i = 1; i < argc; i++){
+        if(strcmp(argv[i],"-splash") == 0){
+            showSplash = true;
+        } else if(strcmp(argv[i], "-hidemenu") == 0){
+            hideMenu = true;
+        }
+    }
     
     
     // Display the welcome splash or the simple one depending on settings
@@ -119,7 +132,15 @@ string acquireOption()
 /// @brief prints out the contents of menu.txt
 void printMenu()
 {
-    // TODO
+    // DONE
+    ifstream myFile("menu.txt");
+
+    string temp;
+    while(getline(myFile, temp)){
+        cout << temp << endl;
+    }
+
+    myFile.close();
 }
 
 
@@ -129,6 +150,16 @@ void printMenu()
 /// @return true when the choice is valid
 bool validChoice(const string &choice)
 {
-    // TODO
+    // DONE
+    if(choice.length() > 2 || choice.length() < 1){
+        return false;
+    }
+
+    for(char letter : choice){
+        if(!isdigit(letter)){
+            return false;
+        }
+    }
+
     return true;
 }
