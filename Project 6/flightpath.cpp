@@ -42,6 +42,7 @@ using namespace std;
 // Defining all functions from the header that are not already
 // fully defined within the header and class declaration.
 
+// creates a path between the SolarSystem objects in systems based on user input
 void FlightPath::createPath(const vector<shared_ptr<SolarSystem>> &systems) {
     string input;
 
@@ -49,7 +50,7 @@ void FlightPath::createPath(const vector<shared_ptr<SolarSystem>> &systems) {
     cout << "Type DONE to terminate flight planning." << endl << endl;
 
     while(true){
-        cout << "Name of a Solar System added to plan: " << endl << endl;
+        cout << "Name of a Solar System to add to plan: " << endl << endl;
 
         getline(cin, input);
 
@@ -62,7 +63,7 @@ void FlightPath::createPath(const vector<shared_ptr<SolarSystem>> &systems) {
             if(current->getName() == input){
                 path.push_back(current);
                 found = true;
-                cout << cur->getName() << " added to path." << endl;
+                cout << current->getName() << " added to path." << endl;
             }
         }
         if(!found){
@@ -71,6 +72,98 @@ void FlightPath::createPath(const vector<shared_ptr<SolarSystem>> &systems) {
     }
 }
 
+// checks if the flight path is valid
+bool FlightPath::isValid(const vector<shared_ptr<SolarSystem>> &systems) const {
+    for(unsigned int i = 0; i < path.size(); i++){
+        if(i != path.size() - 1){
+            auto current = path.at(i);
+            auto next = path.at(i + 1);
+            if(current->connectionExists(next->getName()) == false){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+vector<shared_ptr<SolarSystem>> FlightPath::getPath() const {
+    return path;
+}
+
+// FlightPath object as a string
+string FlightPath::toString() const {
+    string str;
+    for(const auto& current : path){
+        str += current->getName() + " -> ";
+    }
+
+    if(!path.empty()){
+        str.erase(str.size() - 4);
+    }
+    return str;
+}
+
+// connections on the FlightPath as a string
+string FlightPath::connectionsString() const {
+    string str;
+    for(unsigned int i = 0; i < path.size(); i++){
+        str += path[i]->getName() + " -> " + path[i]->connectionsToString();
+        if(i < path.size() - 1){
+            str += "\n";
+        }
+    }
+    return str;
+}
+
+// path to a string
+string FlightPath::toStringAll() const {
+    string str;
+    for(unsigned int i = 0; i < path.size(); i++){
+        str += path[i]->toString();
+        if(i < path.size() - 1){
+            str += "\n";
+        }
+    }
+    return str;
+}
+
+// prints the flight path
+void FlightPath::printPath() const {
+    cout << "Planned Path:" << endl;
+
+    if(!path.empty()){
+        cout << toString() << endl;
+    } else{
+        cout << "(empty path)" << endl;
+    }
+}
+
+// prints the celestials on the flight path
+void FlightPath::printPathCelestials() const {
+    cout << "Celestials on Path:" << endl;
+
+    if(!path.empty()){
+        cout << toStringAll() << endl;
+    } else {
+        cout << "(empty path)" << endl;
+    }
+}
+
+// prints the flight path connections
+void FlightPath::printConnections() const {
+    cout << "Path Connections:" << endl;
+
+    if(!path.empty()){
+        cout << connectionsString() << endl;
+    } else {
+        cout << "(empty path)" << endl;
+    }
+}
+
+// mutator
+void FlightPath::clear(){
+    path.clear();
+}
 
 /// @brief Acquire a starting system and an ending system.
 ///        Then automatically generate a path from start to end.

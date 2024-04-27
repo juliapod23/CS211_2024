@@ -41,8 +41,10 @@ using namespace std;
 Satellite::Satellite(const string& name, double radius, bool natural) : Celestial(name),
 natural(natural), radius(radius) {}
 
+// destructor
 Satellite::~Satellite(){}
 
+// getters and setters
 bool Satellite::isNatural() const {
     return natural;
 }
@@ -59,6 +61,7 @@ void Satellite::setRadius(double r){
     this->radius = r;
 }
 
+// satellite object as a string
 string Satellite::toString() const {
     string str = "Satellite " + name + " is ";
 

@@ -40,8 +40,10 @@ using namespace std;
 Star::Star(const string& name, const string& spectralType, double temperature, double mass) : Celestial(name)
 , mass(mass), temperature(temperature), spectralType(spectralType) {}
 
+// destructor
 Star::~Star(){}
 
+// getters and setters
 double Star::getMass() const{
     return mass;
 }
@@ -66,6 +68,7 @@ void Star::setSpectralType(const string &s) {
     this->spectralType = s;
 }
 
+// star object as a string
 string Star::toString() const {
     string str = "Star " + name + " of type " + spectralType + " with temperature " + to_string(temperature) + " and mass " + to_string(mass);
     return str;

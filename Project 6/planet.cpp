@@ -42,8 +42,10 @@ using namespace std;
 Planet::Planet(const string& name, double orbitalP, double radius) : Celestial(name),
 orbitalPeriod(orbitalP), radius(radius) {}
 
+// destructor
 Planet::~Planet(){}
 
+// getters and setters
 double Planet::getOrbitalPeriod() const {
     return orbitalPeriod;
 }
@@ -64,10 +66,12 @@ void Planet::setRadius(double rad) {
     this->radius = rad;
 }
 
+// adds a satellite to the shared pointer
 void Planet::addSat(shared_ptr<Celestial> &sat){
     sats.push_back(sat);
 }
 
+// checks if a satellite exists in the shared pointer
 bool Planet::satExists(const string &name) const {
     for(const auto& curSat : sats){
         if(curSat->getName() == name){
@@ -77,12 +81,14 @@ bool Planet::satExists(const string &name) const {
     return false;
 }
 
+// prints the Planet object's satellites
 void Planet::printSats() const {
     for(const auto& curSat : sats){
         cout << curSat->toString() << endl;
     }
 }
 
+// planet as a string
 string Planet::toString() const {
     string str = "Planet " + getName() + " with orbital period " + to_string(orbitalPeriod) + " and relative radius of " + to_string(radius);
 

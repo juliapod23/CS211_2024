@@ -34,6 +34,8 @@ Author: Julia Podstawka
 // Class Implementations
 // Defining all functions from the header that are not already
 // fully defined within the header and class declaration.
+
+// getters and setters
 SolarSystem::SolarSystem(const string &name){
     this->name = name;
 }
@@ -58,6 +60,7 @@ void SolarSystem::setName(const string &n){
     this->name = n;
 }
 
+// destructor
 void SolarSystem::clearConnections(){
     connections.clear();
 }
@@ -66,6 +69,7 @@ void SolarSystem::insertCelestial(shared_ptr<Celestial> &newC) {
     celestialBodies.push_back(newC);
 }
 
+// adds a connection to the shared pointer
 void SolarSystem::addConnection(const shared_ptr<SolarSystem> &con){
     if(con != nullptr){
         bool exit = false;
@@ -100,6 +104,7 @@ int SolarSystem::numPlanets() const {
     return count;
 }
 
+// returns number of stars in the SolarSystem object
 int SolarSystem::numStars() const {
     int count = 0;
     for(const auto& cur : celestialBodies){
@@ -110,6 +115,7 @@ int SolarSystem::numStars() const {
     return count;
 }
 
+// returns number of satellites in the SolarSystem object
 int SolarSystem::numSatellites() const {
     int count = 0;
 
@@ -123,6 +129,7 @@ int SolarSystem::numSatellites() const {
     return count;
 }
 
+// returns true/false if a connection exists between the current object and the passed through name
 bool SolarSystem::connectionExists(const string &name) const {
     for(const auto& cur : connections){
         if(cur->getName() == name){
@@ -132,6 +139,7 @@ bool SolarSystem::connectionExists(const string &name) const {
     return false;
 }
 
+// SolarSystem object as a string
 string SolarSystem::toString() const {
     string str = name;
 
@@ -141,6 +149,7 @@ string SolarSystem::toString() const {
     return str;
 }
 
+// creates a string of connections
 string SolarSystem::connectionsToString() const {
     string str = "{";
 
@@ -153,5 +162,3 @@ string SolarSystem::connectionsToString() const {
     str += "}";
     return str;
 }
-
-
